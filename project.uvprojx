@@ -389,6 +389,26 @@
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
             </File>
+            <File>
+              <FileName>limitSwitch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\limitSwitch.c</FilePath>
+            </File>
+            <File>
+              <FileName>limitSwitch.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\limitSwitch.h</FilePath>
+            </File>
+            <File>
+              <FileName>jamProtection.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\jamProtection.c</FilePath>
+            </File>
+            <File>
+              <FileName>jamProtection.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\jamProtection.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
