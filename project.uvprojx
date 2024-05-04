@@ -389,6 +389,26 @@
               <FileType>1</FileType>
               <FilePath>.\main.c</FilePath>
             </File>
+            <File>
+              <FileName>motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\motor.h</FilePath>
+            </File>
+            <File>
+              <FileName>DIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\DIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>DIO.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\DIO.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
