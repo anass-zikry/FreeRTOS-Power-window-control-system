@@ -57,7 +57,7 @@ void auto_motor_down(void){
 
 //left is up 
 //set PA4 to 1  ,PA2 as input for up
-void start_motor_up(void){
+void manual_motor_up(void){
 		watchup=GPIOA->DATA& 0x04;
 		if(((GPIOF->DATA & 0x10)==0)||((GPIOA->DATA& 0x04)==0))
 		{
@@ -66,26 +66,18 @@ void start_motor_up(void){
 		DIO_ledRedOn();
 		
 		}
-
-}
-
-void stop_motor_up(void){
-	watchup=GPIOA->DATA& 0x04;
-	if(((GPIOF->DATA & 0x10)!=0)&&((GPIOA->DATA & 0x04)!=0))
-	//if(((GPIOF->DATA & 0x10)!=0))
-	{
-		
-		GPIOA->DATA &=~0x10; 
-		
-		DIO_ledRedOff();
-				
+		else{
+			GPIOA->DATA &=~0x10; 
+			DIO_ledRedOff();
 		}
 
 }
+
+
 	
 //right is down  
 //set PA5 to 1   PA7 as down
-void start_motor_down(void){
+void manual_motor_down(void){
 	watchdown=GPIOA->DATA & 0x80;
 	if(((GPIOF->DATA & 0x01)==0)||((GPIOA->DATA & 0x80)==0))
 		//if((GPIOF->DATA & 0x01)==0)
@@ -99,22 +91,15 @@ void start_motor_down(void){
 	
 		
 	}
+	else{
+		 GPIOA->DATA &=~0x20; 
+			DIO_ledBlueOff();
+		
+	}
 
 
 }
 	
-void stop_motor_down(void){
-	watchdown=GPIOA->DATA & 0x80;
-if(((GPIOF->DATA & 0x01)!=0)&&((GPIOA->DATA & 0x80)!=0))
-//if(((GPIOF->DATA & 0x01)!=0))
-{
-		
-		GPIOA->DATA &=~0x20; 
-			DIO_ledBlueOff();
-		
-
-		}
-}
 
 
 
