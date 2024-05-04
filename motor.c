@@ -102,4 +102,19 @@ void manual_motor_down(void){
 	
 
 
-
+void start_up(void){
+GPIOA->DATA |=0x10; 
+		DIO_ledRedOn();
+}
+void stop_up(void){
+GPIOA->DATA &=~0x10; 
+			DIO_ledRedOff();
+}
+void start_down(void){
+	GPIOA->DATA |=0x20; 
+  	 DIO_ledBlueOn();
+}
+void stop_down(void){
+	GPIOA->DATA &=~0x20; 
+			DIO_ledBlueOff();
+}

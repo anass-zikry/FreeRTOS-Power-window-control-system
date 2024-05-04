@@ -41,17 +41,26 @@ void motor_up(void *pvParameters)
 	/*for(;;){
 		manual_motor_up();
 	}*/
+	uint8_t upManualFlag=0;
 	for(;;){
 		if(check_motor_up()){
 			vTaskDelay(250/portTICK_RATE_MS);
 			if(check_motor_up()){
-				while(1){manual_motor_up();}
+				upManualFlag=1;
+				start_up();
+				//manual_motor_up();
+				//while(1){manual_motor_up();}
 				//taskYIELD();
 			}
-			else{
+			else if(!upManualFlag){
 				while(1){auto_motor_up();}
 			}
 		
+		}
+		else{
+			upManualFlag=0;
+			stop_up();
+		//manual_motor_up();
 		}
 
 	}
@@ -62,17 +71,26 @@ void motor_down(void *pvParameters)
 		manual_motor_down();
 	}
 	*/
+	uint8_t downManualFlag=0;
 	for(;;){
 		if(check_motor_down()){
 		vTaskDelay(250/portTICK_RATE_MS);
 		if(check_motor_down()){
-			while(1){manual_motor_down();}
+			downManualFlag=1;
+			start_down();
+			//manual_motor_down();
+			//while(!check_motor_down()){}
 		}
-		else{
+		else if(!downManualFlag){
 		 while(1){auto_motor_down();}
 	  }
 	
 	  }
+		else{
+			downManualFlag=0;
+			stop_down();
+		//manual_motor_down();
+		}
   }	
  }
 int main()
