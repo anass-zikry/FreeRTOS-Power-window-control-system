@@ -6,6 +6,7 @@
 #include "jamProtection.h"
 #include "motor.h"
 #include "DIO.h"
+
 /*
 Port Pins Map
 	Port B:
@@ -35,21 +36,46 @@ void intit_task(void *pvParameters)
 void motor_up(void *pvParameters)
 {
 for(;;){
-	start_motor_up();
-	taskYIELD();
-	stop_motor_up();
-	taskYIELD();
+	 if(check_motor_up()){
+		vTaskDelay(250/portTICK_RATE_MS);
+			if(check_motor_up()){
+				start_motor_up();
+				taskYIELD();
+				stop_motor_up();
+				taskYIELD();
+			}
+			
+	 else{
+		 while(1){
+		 auto_motor_up();
+		 }
+	}
+		
+	}
+
 }
 }	
 void motor_down(void *pvParameters)
 {
  for(;;){
-	start_motor_down();
-	taskYIELD();
-	stop_motor_down();
-	taskYIELD();
-}
+	 if(check_motor_down()){
+		vTaskDelay(250/portTICK_RATE_MS);
+			if(check_motor_down()){
+				start_motor_down();
+				taskYIELD();
+				stop_motor_down();
+				taskYIELD();
+			}
+			
+	 else{
+		 while(1){
+		 auto_motor_down();
+		 }
+	 }
+	
+	 }
 }	
+ }
 int main()
 {
 
