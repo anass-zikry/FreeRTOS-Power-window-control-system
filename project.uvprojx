@@ -390,24 +390,25 @@
               <FilePath>.\main.c</FilePath>
             </File>
             <File>
-              <FileName>limitSwitch.c</FileName>
+              <FileName>motor.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\limitSwitch.c</FilePath>
+              <FilePath>.\motor.c</FilePath>
             </File>
             <File>
-              <FileName>limitSwitch.h</FileName>
+              <FileName>motor.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\limitSwitch.h</FilePath>
+              <FilePath>.\motor.h</FilePath>
             </File>
             <File>
-              <FileName>jamProtection.c</FileName>
+              <FileName>DIO.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\jamProtection.c</FilePath>
+              <FilePath>.\DIO.c</FilePath>
             </File>
             <File>
-              <FileName>jamProtection.h</FileName>
+              <FileName>DIO.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\jamProtection.h</FilePath>
+              <FilePath>.\DIO.h</FilePath>
+
             </File>
           </Files>
         </Group>
