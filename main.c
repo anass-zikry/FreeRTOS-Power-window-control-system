@@ -4,6 +4,8 @@
 #include <task.h>
 #include "limitSwitch.h"
 #include "jamProtection.h"
+#include "motor.h"
+#include "DIO.h"
 /*
 Port Pins Map
 	Port B:
@@ -22,11 +24,32 @@ Port Pins Map
 		pin6 -> motor pwm
 */
 
-void vPeriodicTask(void *pvParameters)
+void intit_task(void *pvParameters)
 {
-
+	init_motor();
+	DIO_Init();
+	vTaskDelete(NULL);
+	
+	
 }	
-
+void motor_up(void *pvParameters)
+{
+for(;;){
+	start_motor_up();
+	taskYIELD();
+	stop_motor_up();
+	taskYIELD();
+}
+}	
+void motor_down(void *pvParameters)
+{
+ for(;;){
+	start_motor_down();
+	taskYIELD();
+	stop_motor_down();
+	taskYIELD();
+}
+}	
 int main()
 {
 
@@ -36,7 +59,9 @@ int main()
                             void * const pvParameters,
                             UBaseType_t uxPriority,
                             TaskHandle_t * const pxCreatedTask );*/
-
+ xTaskCreate( intit_task, "intit_task",140,0,3,0 );
+	 xTaskCreate( motor_up, "motor_up",140,0,2,0 );
+	 xTaskCreate( motor_down, "motor_down",140,0,2,0 );
 	// Startup of the FreeRTOS scheduler.  The program should block here.  
 	vTaskStartScheduler();
 	

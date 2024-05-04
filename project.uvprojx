@@ -408,7 +408,6 @@
               <FileName>DIO.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\DIO.h</FilePath>
-
             </File>
             <File>
               <FileName>lockSwitch.c</FileName>
@@ -419,6 +418,26 @@
               <FileName>lockSwitch.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\lockSwitch.h</FilePath>
+            </File>
+            <File>
+              <FileName>jamProtection.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\jamProtection.c</FilePath>
+            </File>
+            <File>
+              <FileName>jamProtection.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\jamProtection.h</FilePath>
+            </File>
+            <File>
+              <FileName>LimitSwitch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\LimitSwitch.c</FilePath>
+            </File>
+            <File>
+              <FileName>LimitSwitch.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\LimitSwitch.h</FilePath>
             </File>
           </Files>
         </Group>
