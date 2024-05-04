@@ -2,6 +2,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include "DIO.h"
+
 int watchup=9;
 int watchdown=8;
 
@@ -14,8 +15,8 @@ void init_motor(void){
    GPIOF->LOCK = 0x4C4F434B;   // unlockGPIOCR register
    GPIOF->CR = 0x01;           // Enable GPIOPUR register enable to commit
    GPIOF->PUR |= 0x11;        // Enable Pull Up resistor PF4//10001
-   GPIOF->DIR |= 0x00;          //set PF1 as an output and PF4 as an input pin//01110
-   GPIOF->DEN |= 0x11;         // Enable PF1 and PF4 as a digital GPIO pins 
+   GPIOF->DIR |= 0x00;          //set PF0 as an output and PF4 as an input pin//01110
+   GPIOF->DEN |= 0x11;         // Enable PF0 and PF4 as a digital GPIO pins 
 		 
 		 
 	//enable port A for output signal
@@ -33,64 +34,72 @@ void init_motor(void){
 	  //PA6 motor pwm
 
 }
+int check_motor_up(){
+	
+	return ((GPIOF->DATA & 0x10)==0);
+}
+
+int check_motor_down(){
+
+	return ((GPIOF->DATA & 0x01)==0);
+}
+
+void auto_motor_up(void){
+	GPIOA->DATA |=0x10; 
+	DIO_ledRedOn();
+}
+
+void auto_motor_down(void){
+	GPIOA->DATA |=0x20; 
+	DIO_ledBlueOn();
+	
+}
 
 //left is up 
 //set PA4 to 1  ,PA2 as input for up
-void start_motor_up(void){
+void manual_motor_up(void){
 		watchup=GPIOA->DATA& 0x04;
 		if(((GPIOF->DATA & 0x10)==0)||((GPIOA->DATA& 0x04)==0))
-		//if((GPIOF->DATA & 0x10)==0)
-	{
-		
+		{
+	
 		GPIOA->DATA |=0x10; 
 		DIO_ledRedOn();
-				vTaskDelay(100/portTICK_RATE_MS);
+		
+		}
+		else{
+			GPIOA->DATA &=~0x10; 
+			DIO_ledRedOff();
 		}
 
 }
 
-void stop_motor_up(void){
-	watchup=GPIOA->DATA& 0x04;
-	if(((GPIOF->DATA & 0x10)!=0)&&((GPIOA->DATA & 0x04)!=0))
-	//if(((GPIOF->DATA & 0x10)!=0))
-	{
-		
-		GPIOA->DATA &=~0x10; 
-		
-		DIO_ledRedOff();
-		vTaskDelay(100/portTICK_RATE_MS);
-		
-		}
 
-}
 	
 //right is down  
 //set PA5 to 1   PA7 as down
-void start_motor_down(void){
+void manual_motor_down(void){
 	watchdown=GPIOA->DATA & 0x80;
 	if(((GPIOF->DATA & 0x01)==0)||((GPIOA->DATA & 0x80)==0))
 		//if((GPIOF->DATA & 0x01)==0)
-{
+	
+	{
+
+
 		
 		GPIOA->DATA |=0x20; 
   	 DIO_ledBlueOn();
-		vTaskDelay(100/portTICK_RATE_MS);
+	
 		
-		}
+	}
+	else{
+		 GPIOA->DATA &=~0x20; 
+			DIO_ledBlueOff();
+		
+	}
 
 
 }
 	
-void stop_motor_down(void){
-	watchdown=GPIOA->DATA & 0x80;
-if(((GPIOF->DATA & 0x01)!=0)&&((GPIOA->DATA & 0x80)!=0))
-//if(((GPIOF->DATA & 0x01)!=0))
-{
-		
-		GPIOA->DATA &=~0x20; 
-			DIO_ledBlueOff();
-		vTaskDelay(100/portTICK_RATE_MS);
 
-		}
-}
+
 
