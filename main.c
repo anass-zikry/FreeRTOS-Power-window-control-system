@@ -24,11 +24,13 @@ Port Pins Map
 		pin5 -> output2 motor
 		pin6 -> motor pwm
 */
-
+uint8_t flag=0x99;
+void GPIOB_Handler(void);
 void intit_task(void *pvParameters)
 {
 	init_motor();
 	DIO_Init();
+	jamProtectionInit();
 	vTaskDelete(NULL);
 	
 	
@@ -82,9 +84,10 @@ int main()
                             void * const pvParameters,
                             UBaseType_t uxPriority,
                             TaskHandle_t * const pxCreatedTask );*/
- xTaskCreate( intit_task, "intit_task",140,0,3,0 );
-	 xTaskCreate( motor_up, "motor_up",140,0,2,0 );
-	 xTaskCreate( motor_down, "motor_down",140,0,2,0 );
+ xTaskCreate( intit_task, "intit_task",40,0,5,0 );
+	 xTaskCreate( motor_up, "motor_up",40,0,2,0 );
+	 xTaskCreate( motor_down, "motor_down",40,0,2,0 );
+	xTaskCreate(vJamProtectionInterruptTask,"jam_protection_interrupt_task",140,0,3,0);
 	// Startup of the FreeRTOS scheduler.  The program should block here.  
 	vTaskStartScheduler();
 	
@@ -97,33 +100,31 @@ int main()
 
 
 void GPIOB_Handler(void) {
+	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
     // Check if the interrupt was triggered by which pin
-		if (GPIOB->RIS & jamProtectionPin ) {
+		if ((GPIOB->RIS & jamProtectionPin) ==1) {
         // Clear the interrupt flag for pin
         GPIOB->ICR |= jamProtectionPin;
 
         // Give the semaphore to signal the ISR completion
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         xSemaphoreGiveFromISR(xJamProtectionSemaphore, &xHigherPriorityTaskWoken);
 
         // Perform any other necessary actions here
     }
-    else if (GPIOB->RIS & limitSwitchUpPin) {
+     if (GPIOB->RIS & limitSwitchUpPin) {
         // Clear the interrupt flag for pin
         GPIOB->ICR |= limitSwitchUpPin;
 
         // Give the semaphore to signal the ISR completion
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         xSemaphoreGiveFromISR(xLimitSwitchSemaphore, &xHigherPriorityTaskWoken);
 
         // Perform any other necessary actions here
     }
-		else if (GPIOB->RIS & limitSwitchDownPin) {
+		 if (GPIOB->RIS & limitSwitchDownPin) {
         // Clear the interrupt flag for pin
         GPIOB->ICR |= limitSwitchDownPin;
 
         // Give the semaphore to signal the ISR completion
-        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
         xSemaphoreGiveFromISR(xLimitSwitchSemaphore, &xHigherPriorityTaskWoken);
 
         // Perform any other necessary actions here
