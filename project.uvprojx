@@ -410,6 +410,16 @@
               <FilePath>.\DIO.h</FilePath>
 
             </File>
+            <File>
+              <FileName>lockSwitch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\lockSwitch.c</FilePath>
+            </File>
+            <File>
+              <FileName>lockSwitch.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\lockSwitch.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

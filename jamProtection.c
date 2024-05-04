@@ -15,7 +15,7 @@ void jamProtectionInit(){
     GPIOB->IBE &= ~jamProtectionPin;   // Set PB1 as triggering on a single edge
     GPIOB->IEV |= jamProtectionPin;   // Set PB1 to trigger on the rising edge
     GPIOB->IM |= jamProtectionPin;     // Enable interrupt for PB0
-		NVIC_SetPriority(GPIOB_IRQn, 3);
+		NVIC_SetPriority(GPIOB_IRQn, 5);
 		NVIC_EnableIRQ(GPIOB_IRQn);
 
 
