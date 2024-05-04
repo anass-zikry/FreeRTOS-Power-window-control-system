@@ -34,9 +34,9 @@ void vJamProtectionInterruptTask(void *pvParameters){
 	//xSemaphoreTake(xJamProtectionSemaphore,0);
 	while(1){
 	xSemaphoreTake(xJamProtectionSemaphore, portMAX_DELAY);
-	start_down();
+	//start_down();
 		vTaskDelay(5000/portTICK_RATE_MS);
-		stop_down();
+	//	stop_down();
 	}
 }
 
