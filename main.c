@@ -2,7 +2,16 @@
 #include <stdio.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include "limitSwitch.h"
+#include "jamProtection.h"
+/*
+Port Pins Map
+	Port B:
+		pin0 -> jam protection
+		pin1 -> limit switch up
+		pin2 -> limit switch down
 
+*/
 
 void vPeriodicTask(void *pvParameters)
 {
@@ -28,6 +37,42 @@ int main()
 	
 }
 
+
+
+void GPIOB_Handler(void) {
+    // Check if the interrupt was triggered by which pin
+		if (GPIOB->RIS & jamProtectionPin ) {
+        // Clear the interrupt flag for pin
+        GPIOB->ICR |= jamProtectionPin;
+
+        // Give the semaphore to signal the ISR completion
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        xSemaphoreGiveFromISR(xJamProtectionSemaphore, &xHigherPriorityTaskWoken);
+
+        // Perform any other necessary actions here
+    }
+    else if (GPIOB->RIS & limitSwitchUpPin) {
+        // Clear the interrupt flag for pin
+        GPIOB->ICR |= limitSwitchUpPin;
+
+        // Give the semaphore to signal the ISR completion
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        xSemaphoreGiveFromISR(xLimitSwitchSemaphore, &xHigherPriorityTaskWoken);
+
+        // Perform any other necessary actions here
+    }
+		else if (GPIOB->RIS & limitSwitchDownPin) {
+        // Clear the interrupt flag for pin
+        GPIOB->ICR |= limitSwitchDownPin;
+
+        // Give the semaphore to signal the ISR completion
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        xSemaphoreGiveFromISR(xLimitSwitchSemaphore, &xHigherPriorityTaskWoken);
+
+        // Perform any other necessary actions here
+    }
+		
+}
 
 // Color    LED(s) PortF
 // dark     ---    0
