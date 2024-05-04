@@ -10,7 +10,16 @@ Port Pins Map
 		pin0 -> jam protection
 		pin1 -> limit switch up
 		pin2 -> limit switch down
-
+		pin4 -> lock switch
+	Port F:
+		pin0 -> button
+		pin5 -> button
+	Port A:
+		pin2 -> input to up
+		pin7 -> input to down
+		pin4 -> output1 motor
+		pin5 -> output2 motor
+		pin6 -> motor pwm
 */
 
 void vPeriodicTask(void *pvParameters)
