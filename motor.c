@@ -33,7 +33,21 @@ void init_motor(void){
 		//left btn fifth bit
 		//right btn first bit
 	  //PA6 motor pwm
-	xMotorMutex = xSemaphoreCreateMutex();
+
+
+
+		 //enable port B
+		 //	pin4 -> lock switch
+	 SYSCTL->RCGCGPIO |= 0x02;   /* enable clock to GPIOA */
+	 while((SYSCTL->PRGPIO&0x00000002) == 0){}
+   GPIOB->LOCK = 0x4C4F434B;   // unlockGPIOCR register
+
+	 GPIOB->PUR |= 0x10; 					//						00010000																10000100
+	 GPIOB->DIR |= 0x00;		 //set PA4 as INPUT                 
+   GPIOB->DEN |= 0x10;         // Enable PA4 and PA5 as a digital GPIO pins              1111 0100
+	 GPIOB->DATA  =0;   
+   xMotorMutex = xSemaphoreCreateMutex();
+
 }
 int check_motor_up(){
 	
@@ -118,4 +132,18 @@ void start_down(void){
 void stop_down(void){
 	GPIOA->DATA &=~0x20; 
 			DIO_ledBlueOff();
+}
+
+void lock_switch(){
+	if ((GPIOB->DATA & 0x10)==0){
+		DIO_ledGreenOn();
+		GPIOA->DATA &=~ 0x40; 
+		  
+		
+}
+	if ((GPIOB->DATA & 0x10)!=0){
+	DIO_ledGreenOff();	  
+  GPIOA->DATA |=1<<6; 
+}
+	
 }

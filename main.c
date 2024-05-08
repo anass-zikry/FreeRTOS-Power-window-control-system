@@ -107,6 +107,15 @@ void motor_down(void *pvParameters)
   
 }
  }
+
+ void lock_switch_check(void *pvParameters)
+	 
+{
+	for(;;){
+		lock_switch();
+	}
+	
+ }
 int main()
 {
 
@@ -120,6 +129,7 @@ int main()
 	 xTaskCreate( motor_up, "motor_up",40,0,2,0 );
 	 xTaskCreate( motor_down, "motor_down",40,0,2,0 );
 	xTaskCreate(vJamProtectionInterruptTask,"jam_protection_interrupt_task",140,0,3,0);
+	xTaskCreate(lock_switch_check,"lock_switch_check",40,0,2,0);
 	// Startup of the FreeRTOS scheduler.  The program should block here.  
 	vTaskStartScheduler();
 	
