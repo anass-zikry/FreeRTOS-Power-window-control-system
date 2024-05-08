@@ -44,10 +44,16 @@ void motor_up(void *pvParameters)
 	uint8_t upManualFlag=0;
 	for(;;){
 		if(check_motor_up()){
+			if(xSemaphoreTake(xMotorMutex,0)==pdPASS){
+				xSemaphoreGive(xMotorMutex);}
+			else continue;
+			if(upManualFlag)continue;
+			
 			vTaskDelay(250/portTICK_RATE_MS);
 			if(check_motor_up()){
 				upManualFlag=1;
 				start_up();
+				
 				//manual_motor_up();
 				//while(1){manual_motor_up();}
 				//taskYIELD();
@@ -57,13 +63,14 @@ void motor_up(void *pvParameters)
 			}
 		
 		}
-		else{
+		else if(upManualFlag){
 			upManualFlag=0;
 			stop_up();
 		//manual_motor_up();
 		}
 
-	}
+	
+}
 }	
 void motor_down(void *pvParameters)
 {
@@ -73,7 +80,12 @@ void motor_down(void *pvParameters)
 	*/
 	uint8_t downManualFlag=0;
 	for(;;){
+		
 		if(check_motor_down()){
+			if(xSemaphoreTake(xMotorMutex,0)==pdPASS){
+			xSemaphoreGive(xMotorMutex);
+			}else continue;
+			if(downManualFlag)continue;
 		vTaskDelay(250/portTICK_RATE_MS);
 		if(check_motor_down()){
 			downManualFlag=1;
@@ -86,12 +98,14 @@ void motor_down(void *pvParameters)
 	  }
 	
 	  }
-		else{
+		else if(downManualFlag){
 			downManualFlag=0;
 			stop_down();
+			
 		//manual_motor_down();
 		}
-  }	
+  
+}
  }
 
  void lock_switch_check(void *pvParameters)
@@ -129,6 +143,7 @@ int main()
 
 void GPIOB_Handler(void) {
 	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+		
     // Check if the interrupt was triggered by which pin
 		if ((GPIOB->RIS & jamProtectionPin) ==1) {
         // Clear the interrupt flag for pin
