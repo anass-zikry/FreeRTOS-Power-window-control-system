@@ -11,3 +11,4 @@ void start_up(void);
 void stop_up(void);
 void start_down(void);
 void stop_down(void);
+void lock_switch(void);
