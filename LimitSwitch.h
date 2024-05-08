@@ -6,12 +6,14 @@
 
 
 extern SemaphoreHandle_t xLimitSwitchSemaphore;
-
+extern QueueHandle_t xQueue;
 #endif /* limitSwitch_H */
 
 // port B pin1
 #define limitSwitchUpPin (1<<1)
 #define limitSwitchDownPin (1<<2)
 
+//int flagLimit = 0;
+
 void LimitSwitchInit();
-void vLimitSwitchInterruptTask(void *pvParameters);
+void vLimitSwitchInterruptTask(void );

@@ -26,11 +26,12 @@ Port Pins Map
 */
 uint8_t flag=0x99;
 void GPIOB_Handler(void);
-void intit_task(void *pvParameters)
+void intit_task(void *pvParameters)  
 {
 	init_motor();
 	DIO_Init();
 	jamProtectionInit();
+//	LimitSwitchInit();
 	vTaskDelete(NULL);
 	
 	
