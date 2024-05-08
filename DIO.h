@@ -15,3 +15,7 @@ void DIO_toggleRED(void);
 void DIO_toggleBLUE(void);
 
 void DIO_toggleGREEN(void);
+void DIO_ledGreenOn(void);
+
+void DIO_ledGreenOff(void);
+

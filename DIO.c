@@ -25,7 +25,13 @@ void DIO_ledBlueOn(void) {
 void DIO_ledBlueOff(void) {
      GPIOF->DATA &=~ LED_BLUE;
 }
+void DIO_ledGreenOn(void) {
+    GPIOF->DATA |= LED_GREEN;
+}
 
+void DIO_ledGreenOff(void) {
+     GPIOF->DATA &=~ LED_GREEN;
+}
 void DIO_toggleRED(void) {
      GPIOF->DATA ^= LED_RED;
 }
