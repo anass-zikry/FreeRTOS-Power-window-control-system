@@ -2,10 +2,11 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include "DIO.h"
+#include <semphr.h>
 
 int watchup=9;
 int watchdown=8;
-
+SemaphoreHandle_t xMotorMutex;
 void init_motor(void){
 	
 	
@@ -32,7 +33,7 @@ void init_motor(void){
 		//left btn fifth bit
 		//right btn first bit
 	  //PA6 motor pwm
-
+	xMotorMutex = xSemaphoreCreateMutex();
 }
 int check_motor_up(){
 	
