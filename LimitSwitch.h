@@ -2,11 +2,11 @@
 
 #include <FreeRTOS.h>
 #include "semphr.h"
-
-
+#include "queue.h"
+#include "motor.h"
 
 extern SemaphoreHandle_t xLimitSwitchSemaphore;
-extern QueueHandle_t xQueue;
+extern QueueHandle_t xLimitQueue;
 #endif /* limitSwitch_H */
 
 // port B pin1

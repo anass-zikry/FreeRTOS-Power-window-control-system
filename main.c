@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include <queue.h>
+#include <semphr.h>
 #include "limitSwitch.h"
 #include "jamProtection.h"
 #include "motor.h"
@@ -31,7 +33,7 @@ void intit_task(void *pvParameters)
 	init_motor();
 	DIO_Init();
 	jamProtectionInit();
-//	LimitSwitchInit();
+	LimitSwitchInit();
 	vTaskDelete(NULL);
 	
 	
@@ -44,9 +46,20 @@ void motor_up(void *pvParameters)
 	}*/
 	uint8_t upManualFlag=0;
 	for(;;){
-		if(check_motor_up()){
+		//int checkPassenger=check_motor_up_passenger();
+		int limitQueueValue = 0;
+		xQueuePeek(xLimitQueue,&limitQueueValue,0);
+		if(limitQueueValue == 1)continue;
+		else if(limitQueueValue == 2){
+			xQueueReset(xLimitQueue);
+		}
+		if((check_motor_up_driver()==0) || (check_motor_up_passenger()==0)){
+			if(check_motor_up_passenger()==0){
+				uint8_t lockValue = (GPIOB->DATA & 0x10)==0;
+				if(lockValue)continue;
+			}
 			vTaskDelay(250/portTICK_RATE_MS);
-			if(check_motor_up()){
+			if((check_motor_up_driver()==0) || check_motor_up_passenger()){
 				upManualFlag=1;
 				start_up();
 				//manual_motor_up();
@@ -54,7 +67,11 @@ void motor_up(void *pvParameters)
 				//taskYIELD();
 			}
 			else if(!upManualFlag){
-				while(1){auto_motor_up();}
+				start_up();
+				/*int limitValue=0;
+				auto_motor_up();
+				xQueuePeek(xLimitQueue,&limitValue,0);
+				while(limitValue != 1)xQueuePeek(xLimitQueue,&limitValue,0);*/
 			}
 		
 		}
@@ -74,16 +91,28 @@ void motor_down(void *pvParameters)
 	*/
 	uint8_t downManualFlag=0;
 	for(;;){
-		if(check_motor_down()){
+		//int checkPassenger=check_motor_down_passenger();
+		int limitQueueValue = 0;
+		xQueuePeek(xLimitQueue,&limitQueueValue,0);
+		if(limitQueueValue == 2)continue;
+		else if(limitQueueValue == 1){
+			xQueueReset(xLimitQueue);
+		}
+		if((check_motor_down_driver()==0) || (check_motor_down_passenger()==0)){
+			if(check_motor_down_passenger()==0){
+				uint8_t lockValue = (GPIOB->DATA & 0x10)==0;
+				if(lockValue)continue;
+			}
 		vTaskDelay(250/portTICK_RATE_MS);
-		if(check_motor_down()){
+		if((check_motor_down_driver()==0) || check_motor_down_passenger()){
 			downManualFlag=1;
 			start_down();
 			//manual_motor_down();
 			//while(!check_motor_down()){}
 		}
 		else if(!downManualFlag){
-		 while(1){auto_motor_down();}
+			start_down();
+		 //while(1){auto_motor_down();}
 	  }
 	
 	  }
@@ -94,7 +123,7 @@ void motor_down(void *pvParameters)
 		}
   }	
  }
-
+/*
  void lock_switch_check(void *pvParameters)
 	 
 {
@@ -102,7 +131,7 @@ void motor_down(void *pvParameters)
 		lock_switch();
 	}
 	
- }
+ }*/
 int main()
 {
 
@@ -116,7 +145,7 @@ int main()
 	 xTaskCreate( motor_up, "motor_up",40,0,2,0 );
 	 xTaskCreate( motor_down, "motor_down",40,0,2,0 );
 	xTaskCreate(vJamProtectionInterruptTask,"jam_protection_interrupt_task",140,0,3,0);
-	xTaskCreate(lock_switch_check,"lock_switch_check",40,0,2,0);
+	//xTaskCreate(lock_switch_check,"lock_switch_check",40,0,2,0);
 	// Startup of the FreeRTOS scheduler.  The program should block here.  
 	vTaskStartScheduler();
 	
@@ -143,7 +172,8 @@ void GPIOB_Handler(void) {
      if (GPIOB->RIS & limitSwitchUpPin) {
         // Clear the interrupt flag for pin
         GPIOB->ICR |= limitSwitchUpPin;
-
+			 int v=1;
+				xQueueSendToBackFromISR(xLimitQueue,&v,&xHigherPriorityTaskWoken);
         // Give the semaphore to signal the ISR completion
         xSemaphoreGiveFromISR(xLimitSwitchSemaphore, &xHigherPriorityTaskWoken);
 
@@ -152,7 +182,8 @@ void GPIOB_Handler(void) {
 		 if (GPIOB->RIS & limitSwitchDownPin) {
         // Clear the interrupt flag for pin
         GPIOB->ICR |= limitSwitchDownPin;
-
+				int v=2;
+				xQueueSendToBackFromISR(xLimitQueue,&v,&xHigherPriorityTaskWoken);
         // Give the semaphore to signal the ISR completion
         xSemaphoreGiveFromISR(xLimitSwitchSemaphore, &xHigherPriorityTaskWoken);
 

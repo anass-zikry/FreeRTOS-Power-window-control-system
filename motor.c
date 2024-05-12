@@ -24,7 +24,7 @@ void init_motor(void){
 	 while((SYSCTL->PRGPIO&0x00000001) == 0){}
    GPIOA->LOCK = 0x4C4F434B;   // unlockGPIOCR register
  //  GPIOA->CR = 0xB4;           // Enable GPIOPUR register enable to commit		84218421
-	 GPIOA->PUR |= 0x84; 					//																						10000100
+	 GPIOA->PUR |= 0x84; 					//																						1000  0100
 	 GPIOA->DIR |= 0x70;		 //set PA4 and PA5 as output  and PA2 and PA7 as an input 01110000                 
    GPIOA->DEN |= 0xF4;         // Enable PA4 and PA5 as a digital GPIO pins              1111 0100
 	 GPIOA->DATA  =0;   
@@ -47,16 +47,25 @@ void init_motor(void){
    
 
 }
-int check_motor_up(){
+int check_motor_up_driver(){
 	
-	return ((GPIOF->DATA & 0x10)==0);
+	return ((GPIOF->DATA & 0x10));
 }
 
-int check_motor_down(){
+int check_motor_down_driver(){
 
-	return ((GPIOF->DATA & 0x01)==0);
+	return ((GPIOF->DATA & 0x01));
 }
 
+int check_motor_up_passenger(){
+	
+	return ((GPIOA->DATA & 0x02));
+}
+
+int check_motor_down_passenger(){
+
+	return ((GPIOA->DATA & 0x80));
+}
 void auto_motor_up(void){
 	GPIOA->DATA |=0x10; 
 	DIO_ledRedOn();
@@ -68,6 +77,41 @@ void auto_motor_down(void){
 	
 }
 
+
+void start_up(void){
+GPIOA->DATA |=0x10; 
+		DIO_ledRedOn();
+}
+void stop_up(void){
+GPIOA->DATA &=~0x10; 
+			DIO_ledRedOff();
+}
+void start_down(void){
+	GPIOA->DATA |=0x20; 
+  	 DIO_ledBlueOn();
+}
+void stop_down(void){
+	GPIOA->DATA &=~0x20; 
+			DIO_ledBlueOff();
+}
+/*
+void lock_switch(){
+	if ((GPIOB->DATA & 0x10)==0){
+		DIO_ledGreenOn();
+		//GPIOA->DATA &=~ 0x40; 
+		  
+		
+}
+	if ((GPIOB->DATA & 0x10)!=0){
+	DIO_ledGreenOff();	  
+  //GPIOA->DATA |=1<<6; 
+}
+	
+}
+*/
+
+
+/*
 //left is up 
 //set PA4 to 1  ,PA2 as input for up
 void manual_motor_up(void){
@@ -85,11 +129,11 @@ void manual_motor_up(void){
 		}
 
 }
+*/
 
-
-	
+/*
 //right is down  
-//set PA5 to 1   PA7 as down
+//set PA5 to 1   PA*7 as down
 void manual_motor_down(void){
 	watchdown=GPIOA->DATA & 0x80;
 	if(((GPIOF->DATA & 0x01)==0)||((GPIOA->DATA & 0x80)==0))
@@ -112,36 +156,7 @@ void manual_motor_down(void){
 
 
 }
-	
+*/
 
 
-void start_up(void){
-GPIOA->DATA |=0x10; 
-		DIO_ledRedOn();
-}
-void stop_up(void){
-GPIOA->DATA &=~0x10; 
-			DIO_ledRedOff();
-}
-void start_down(void){
-	GPIOA->DATA |=0x20; 
-  	 DIO_ledBlueOn();
-}
-void stop_down(void){
-	GPIOA->DATA &=~0x20; 
-			DIO_ledBlueOff();
-}
 
-void lock_switch(){
-	if ((GPIOB->DATA & 0x10)==0){
-		DIO_ledGreenOn();
-		GPIOA->DATA &=~ 0x40; 
-		  
-		
-}
-	if ((GPIOB->DATA & 0x10)!=0){
-	DIO_ledGreenOff();	  
-  GPIOA->DATA |=1<<6; 
-}
-	
-}
