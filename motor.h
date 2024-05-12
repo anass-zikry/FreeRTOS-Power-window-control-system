@@ -18,5 +18,3 @@ void lock_switch(void);
 
 extern SemaphoreHandle_t xMotorMutex;
 
-
-

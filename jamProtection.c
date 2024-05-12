@@ -32,10 +32,13 @@ __ASM("CPSIE i");
 
 void vJamProtectionInterruptTask(void *pvParameters){
 	xSemaphoreTake(xJamProtectionSemaphore,0);
+
+	
 	while(1){
 	xSemaphoreTake(xJamProtectionSemaphore, portMAX_DELAY);
-	xSemaphoreTake(xMotorMutex,portMAX_DELAY);
-		stop_up();
+		xSemaphoreTake(xMotorMutex,portMAX_DELAY);
+	stop_up();
+
 		stop_down();
 	start_down();
 		vTaskDelay(5000/portTICK_RATE_MS);
