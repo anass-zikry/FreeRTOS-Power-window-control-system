@@ -34,8 +34,9 @@ void init_motor(void){
 		//left btn fifth bit
 		//right btn first bit
 	  //PA6 motor pwm
-		 
-		 
+
+
+
 		 //enable port B
 		 //	pin4 -> lock switch
 	 SYSCTL->RCGCGPIO |= 0x02;   /* enable clock to GPIOA */
@@ -45,9 +46,11 @@ void init_motor(void){
 	 GPIOB->PUR |= 0x10; 					//						00010000																10000100
 	 GPIOB->DIR |= 0x00;		 //set PA4 as INPUT                 
    GPIOB->DEN |= 0x10;         // Enable PA4 and PA5 as a digital GPIO pins              1111 0100
+
 	 GPIOB->DATA  =0; 
    
 xMotorMutex = xSemaphoreCreateMutex();
+
 }
 int check_motor_up(){
 	
