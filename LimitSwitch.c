@@ -3,6 +3,7 @@
                                                                                                               
 SemaphoreHandle_t xLimitSwitchSemaphore = NULL;
 QueueHandle_t xQueue;
+int flagLimit = 0;
 void LimitSwitchInit(){
 	//enable clock for port b
 	SYSCTL->RCGCGPIO |= (1<<1);
@@ -27,7 +28,7 @@ void LimitSwitchInit(){
 		__ASM("CPSIE i");
 		vSemaphoreCreateBinary(xLimitSwitchSemaphore);
 		xSemaphoreCreateBinary();
-		xQueue = xQueueCreate(2, sizeof(int));
+		xQueue = xQueueCreate(1, sizeof(int));
 }
 void vLimitSwitchInterruptTask(void){
 	while(1){
@@ -35,13 +36,13 @@ void vLimitSwitchInterruptTask(void){
 	//Stop Motor
 		if((GPIOB->DATA & limitSwitchUpPin)==0){
 			//up limit switch triggered
-			//flagLimit=1;
-			//xQueueSendToBack( xQueue, &flagLimit, 10 );
+			flagLimit=1;
+			xQueueSendToBack( xQueue, &flagLimit, 10 );
 		}
 		else if((GPIOB->DATA & limitSwitchDownPin)==0){
 			//down limit switch triggered
-			//flagLimit=2;
-			//xQueueSendToBack( xQueue, &flagLimit, 10 );
+			flagLimit=2;
+			xQueueSendToBack( xQueue, &flagLimit, 10 );
 		}
 	}
 	

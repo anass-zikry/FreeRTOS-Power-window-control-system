@@ -13,7 +13,7 @@ extern QueueHandle_t xQueue;
 #define limitSwitchUpPin (1<<1)
 #define limitSwitchDownPin (1<<2)
 
-//int flagLimit = 0;
+
 
 void LimitSwitchInit();
 void vLimitSwitchInterruptTask(void );
