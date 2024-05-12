@@ -2,9 +2,11 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include "DIO.h"
+#include <semphr.h>
 
 int watchup=9;
 int watchdown=8;
+SemaphoreHandle_t xMotorMutex;
 
 void init_motor(void){
 	
@@ -43,9 +45,9 @@ void init_motor(void){
 	 GPIOB->PUR |= 0x10; 					//						00010000																10000100
 	 GPIOB->DIR |= 0x00;		 //set PA4 as INPUT                 
    GPIOB->DEN |= 0x10;         // Enable PA4 and PA5 as a digital GPIO pins              1111 0100
-	 GPIOB->DATA  =0;   
+	 GPIOB->DATA  =0; 
    
-
+xMotorMutex = xSemaphoreCreateMutex();
 }
 int check_motor_up(){
 	

@@ -44,7 +44,12 @@ void motor_up(void *pvParameters)
 	}*/
 	uint8_t upManualFlag=0;
 	for(;;){
+		if ((GPIOB->DATA & 0x10)!=0)continue;
 		if(check_motor_up()){
+						if(xSemaphoreTake(xMotorMutex,0)==pdPASS){
+				xSemaphoreGive(xMotorMutex);}
+			else continue;
+			if(upManualFlag)continue;
 			vTaskDelay(250/portTICK_RATE_MS);
 			if(check_motor_up()){
 				upManualFlag=1;
@@ -58,7 +63,7 @@ void motor_up(void *pvParameters)
 			}
 		
 		}
-		else{
+		else if(upManualFlag){
 			upManualFlag=0;
 			stop_up();
 		//manual_motor_up();
@@ -74,7 +79,12 @@ void motor_down(void *pvParameters)
 	*/
 	uint8_t downManualFlag=0;
 	for(;;){
+		if ((GPIOB->DATA & 0x10)!=0)continue;
 		if(check_motor_down()){
+						if(xSemaphoreTake(xMotorMutex,0)==pdPASS){
+			xSemaphoreGive(xMotorMutex);
+			}else continue;
+			if(downManualFlag)continue;
 		vTaskDelay(250/portTICK_RATE_MS);
 		if(check_motor_down()){
 			downManualFlag=1;
@@ -87,7 +97,7 @@ void motor_down(void *pvParameters)
 	  }
 	
 	  }
-		else{
+		else if(downManualFlag){
 			downManualFlag=0;
 			stop_down();
 		//manual_motor_down();
@@ -116,7 +126,7 @@ int main()
 	 xTaskCreate( motor_up, "motor_up",40,0,2,0 );
 	 xTaskCreate( motor_down, "motor_down",40,0,2,0 );
 	xTaskCreate(vJamProtectionInterruptTask,"jam_protection_interrupt_task",140,0,3,0);
-	xTaskCreate(lock_switch_check,"lock_switch_check",40,0,2,0);
+	//xTaskCreate(lock_switch_check,"lock_switch_check",40,0,2,0);
 	// Startup of the FreeRTOS scheduler.  The program should block here.  
 	vTaskStartScheduler();
 	
