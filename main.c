@@ -67,11 +67,12 @@ void motor_up(void *pvParameters)
 				//taskYIELD();
 			}
 			else if(!upManualFlag){
+				//start_up();
+				int limitValue=0;
 				start_up();
-				/*int limitValue=0;
-				auto_motor_up();
 				xQueuePeek(xLimitQueue,&limitValue,0);
-				while(limitValue != 1)xQueuePeek(xLimitQueue,&limitValue,0);*/
+				while(limitValue != 1)xQueuePeek(xLimitQueue,&limitValue,0);
+				stop_up();
 			}
 		
 		}
@@ -111,7 +112,12 @@ void motor_down(void *pvParameters)
 			//while(!check_motor_down()){}
 		}
 		else if(!downManualFlag){
-			start_down();
+			//start_down();
+			int limitValue=0;
+				start_down();
+				xQueuePeek(xLimitQueue,&limitValue,0);
+				while(limitValue != 2)xQueuePeek(xLimitQueue,&limitValue,0);
+				stop_down();
 		 //while(1){auto_motor_down();}
 	  }
 	
