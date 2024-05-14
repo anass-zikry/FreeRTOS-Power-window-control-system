@@ -59,7 +59,7 @@ int check_motor_down_driver(){
 
 int check_motor_up_passenger(){
 	
-	return ((GPIOA->DATA & 0x02));
+	return ((GPIOA->DATA & 0x04));
 }
 
 int check_motor_down_passenger(){
