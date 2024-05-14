@@ -59,7 +59,7 @@ void motor_up(void *pvParameters)
 				if(lockValue)continue;
 			}
 			vTaskDelay(250/portTICK_RATE_MS);
-			if((check_motor_up_driver()==0) || check_motor_up_passenger()){
+			if((check_motor_up_driver()==0) || check_motor_up_passenger()==0){
 				upManualFlag=1;
 				start_up();
 				//manual_motor_up();
@@ -105,7 +105,7 @@ void motor_down(void *pvParameters)
 				if(lockValue)continue;
 			}
 		vTaskDelay(250/portTICK_RATE_MS);
-		if((check_motor_down_driver()==0) || check_motor_down_passenger()){
+		if((check_motor_down_driver()==0) || check_motor_down_passenger()==0){
 			downManualFlag=1;
 			start_down();
 			//manual_motor_down();
