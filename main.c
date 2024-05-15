@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#include <queue.h>
+#include <semphr.h>
 #include "limitSwitch.h"
 #include "jamProtection.h"
 #include "motor.h"
@@ -31,7 +33,7 @@ void intit_task(void *pvParameters)
 	init_motor();
 	DIO_Init();
 	jamProtectionInit();
-//	LimitSwitchInit();
+	LimitSwitchInit();
 	vTaskDelete(NULL);
 	
 	
@@ -44,7 +46,21 @@ void motor_up(void *pvParameters)
 	}*/
 	uint8_t upManualFlag=0;
 	for(;;){
-		if ((GPIOB->DATA & 0x10)!=0)continue;
+
+		//int checkPassenger=check_motor_up_passenger();
+		int limitQueueValue = 0;
+		xQueuePeek(xLimitQueue,&limitQueueValue,0);
+		if(limitQueueValue == 1)continue;
+		else if(limitQueueValue == 2){
+			xQueueReset(xLimitQueue);
+		}
+		if((check_motor_up_driver()==0) || (check_motor_up_passenger()==0)){
+			if(check_motor_up_passenger()==0){
+				uint8_t lockValue = (GPIOB->DATA & 0x10)==0;
+				if(lockValue)continue;
+			}
+
+		//if ((GPIOB->DATA & 0x10)!=0)continue;
 		if(check_motor_up()){
 
 						if(xSemaphoreTake(xMotorMutex,0)==pdPASS){
@@ -53,7 +69,7 @@ void motor_up(void *pvParameters)
 			if(upManualFlag)continue;
 
 			vTaskDelay(250/portTICK_RATE_MS);
-			if(check_motor_up()){
+			if((check_motor_up_driver()==0) || check_motor_up_passenger()==0){
 				upManualFlag=1;
 				start_up();
 				
@@ -62,7 +78,12 @@ void motor_up(void *pvParameters)
 				//taskYIELD();
 			}
 			else if(!upManualFlag){
-				while(1){auto_motor_up();}
+				//start_up();
+				int limitValue=0;
+				start_up();
+				xQueuePeek(xLimitQueue,&limitValue,0);
+				while(limitValue != 1)xQueuePeek(xLimitQueue,&limitValue,0);
+				stop_up();
 			}
 		
 		}
@@ -84,22 +105,43 @@ void motor_down(void *pvParameters)
 	uint8_t downManualFlag=0;
 	for(;;){
 
-		if ((GPIOB->DATA & 0x10)!=0)continue;
+		//int checkPassenger=check_motor_down_passenger();
+		int limitQueueValue = 0;
+		xQueuePeek(xLimitQueue,&limitQueueValue,0);
+		if(limitQueueValue == 2)continue;
+		else if(limitQueueValue == 1){
+			xQueueReset(xLimitQueue);
+		}
+		if((check_motor_down_driver()==0) || (check_motor_down_passenger()==0)){
+			if(check_motor_down_passenger()==0){
+				uint8_t lockValue = (GPIOB->DATA & 0x10)==0;
+				if(lockValue)continue;
+			}
+
+
+		//if ((GPIOB->DATA & 0x10)!=0)continue;
 		if(check_motor_down()){
 						if(xSemaphoreTake(xMotorMutex,0)==pdPASS){
 
 			xSemaphoreGive(xMotorMutex);
 			}else continue;
 			if(downManualFlag)continue;
+
 		vTaskDelay(250/portTICK_RATE_MS);
-		if(check_motor_down()){
+		if((check_motor_down_driver()==0) || check_motor_down_passenger()==0){
 			downManualFlag=1;
 			start_down();
 			//manual_motor_down();
 			//while(!check_motor_down()){}
 		}
 		else if(!downManualFlag){
-		 while(1){auto_motor_down();}
+			//start_down();
+			int limitValue=0;
+				start_down();
+				xQueuePeek(xLimitQueue,&limitValue,0);
+				while(limitValue != 2)xQueuePeek(xLimitQueue,&limitValue,0);
+				stop_down();
+		 //while(1){auto_motor_down();}
 	  }
 	
 	  }
@@ -112,7 +154,7 @@ void motor_down(void *pvParameters)
   
 }
  }
-
+/*
  void lock_switch_check(void *pvParameters)
 	 
 {
@@ -120,7 +162,7 @@ void motor_down(void *pvParameters)
 		lock_switch();
 	}
 	
- }
+ }*/
 int main()
 {
 
@@ -162,7 +204,8 @@ void GPIOB_Handler(void) {
      if (GPIOB->RIS & limitSwitchUpPin) {
         // Clear the interrupt flag for pin
         GPIOB->ICR |= limitSwitchUpPin;
-
+			 int v=1;
+				xQueueSendToBackFromISR(xLimitQueue,&v,&xHigherPriorityTaskWoken);
         // Give the semaphore to signal the ISR completion
         xSemaphoreGiveFromISR(xLimitSwitchSemaphore, &xHigherPriorityTaskWoken);
 
@@ -171,7 +214,8 @@ void GPIOB_Handler(void) {
 		 if (GPIOB->RIS & limitSwitchDownPin) {
         // Clear the interrupt flag for pin
         GPIOB->ICR |= limitSwitchDownPin;
-
+				int v=2;
+				xQueueSendToBackFromISR(xLimitQueue,&v,&xHigherPriorityTaskWoken);
         // Give the semaphore to signal the ISR completion
         xSemaphoreGiveFromISR(xLimitSwitchSemaphore, &xHigherPriorityTaskWoken);
 
