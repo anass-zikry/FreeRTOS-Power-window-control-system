@@ -1,3 +1,5 @@
+#include <semphr.h>
+
 
 void init_motor(void);
 //void manual_motor_up(void);
@@ -14,3 +16,7 @@ void stop_up(void);
 void start_down(void);
 void stop_down(void);
 void lock_switch(void);
+
+
+extern SemaphoreHandle_t xMotorMutex;
+
