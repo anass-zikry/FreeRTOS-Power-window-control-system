@@ -61,13 +61,13 @@ void motor_up(void *pvParameters)
 			}
 
 		//if ((GPIOB->DATA & 0x10)!=0)continue;
-		if(check_motor_up()){
+		
 
-						if(xSemaphoreTake(xMotorMutex,0)==pdPASS){
+			if(xSemaphoreTake(xMotorMutex,0)==pdPASS){
 				xSemaphoreGive(xMotorMutex);}
 			else continue;
 			if(upManualFlag)continue;
-
+			
 			vTaskDelay(250/portTICK_RATE_MS);
 			if((check_motor_up_driver()==0) || check_motor_up_passenger()==0){
 				upManualFlag=1;
@@ -120,13 +120,12 @@ void motor_down(void *pvParameters)
 
 
 		//if ((GPIOB->DATA & 0x10)!=0)continue;
-		if(check_motor_down()){
-						if(xSemaphoreTake(xMotorMutex,0)==pdPASS){
+			if(xSemaphoreTake(xMotorMutex,0)==pdPASS){
 
 			xSemaphoreGive(xMotorMutex);
 			}else continue;
 			if(downManualFlag)continue;
-
+		
 		vTaskDelay(250/portTICK_RATE_MS);
 		if((check_motor_down_driver()==0) || check_motor_down_passenger()==0){
 			downManualFlag=1;
@@ -144,7 +143,7 @@ void motor_down(void *pvParameters)
 		 //while(1){auto_motor_down();}
 	  }
 	
-	  }
+	}
 		else if(downManualFlag){
 			downManualFlag=0;
 			stop_down();
